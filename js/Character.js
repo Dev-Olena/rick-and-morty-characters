@@ -10,6 +10,7 @@ class Character {
         console.log(this.name);
         const characterCard = document.createElement('article');
         const name = document.createElement('h3');
+        name.classList.add('character-name')
         name.textContent = this.name;
         const img = document.createElement('img');
         img.src = this.image;
