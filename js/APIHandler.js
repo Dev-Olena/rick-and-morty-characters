@@ -3,8 +3,8 @@ class APIHandler {
         this.url = url;
     }
 
-    //функція для отримання загальної кількості персонажей з API та обирання рандомних id у кількості визначених змінною  amount
-    async getRandomIds(amount) {
+    //приватний метод класу для отримання загальної кількості персонажей з API та обирання рандомних id у кількості визначених змінною  amount
+    async #getRandomIds(amount) {
         try{
             const response =  await fetch(this.url);
             if(!response.ok) {
@@ -28,7 +28,7 @@ class APIHandler {
     // функція для отримання рандомних персонажей
     async getRandomCharacters(amount) {
         try{
-            const randomIds = await this.getRandomIds(amount);
+            const randomIds = await this.#getRandomIds(amount);
             const url = `${this.url}/${randomIds}`;
             const response = await fetch(url);
             if(!response.ok) {

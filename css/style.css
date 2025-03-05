@@ -1,5 +1,7 @@
 :root{
     font-size: 16px;
+    --light-color: #ebebfd;
+    --dark-color: #2a2a3c;
 
 }
 
@@ -19,7 +21,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    background-color: #ebebfd;
+    background-color: var(--light-color);
     justify-content: center;
     padding: 0 2rem;
 }
@@ -35,7 +37,7 @@ h1 {
 }
 
 .main {
-    background-color: #2a2a3c;
+    background-color: var(--dark-color);
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -66,6 +68,18 @@ h1 {
     border: none;
 }
 
+#loader {
+    color: var(--light-color);
+    margin: 0 auto;
+    letter-spacing: 0.2rem;
+    display: none;
+}
+
+#loader.visible {
+    display: block;
+}
+
+
 #list {
     display: flex;
     flex-direction: row;
@@ -85,8 +99,8 @@ h1 {
     position: absolute;
     z-index: 2;
     bottom: 10px;
-    background-color: #2a2a3ccc;
-    color: #ebebfd;
+    background-color: var(--dark-color);
+    color: var(--light-color);
     width: 100%;
     padding: 6px 0;
     text-align: center;
