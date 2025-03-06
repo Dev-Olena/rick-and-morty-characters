@@ -2,7 +2,9 @@
     font-size: 16px;
     --light-color: #ebebfd;
     --dark-color: #2a2a3c;
-
+    --violet-color: #5a5aa7;
+    --border-radius: 10px;
+    --shadow: -4px -4px 12px #ebebfd56, 4px 4px 12px #ebebfd56;
 }
 
 *{
@@ -16,6 +18,7 @@
     grid-template: minmax(150px, auto) 1fr / 1fr;
 }
 
+/* Header block */
 
 .header {
     display: flex;
@@ -36,6 +39,7 @@ h1 {
     margin-left: 1rem;
 }
 
+/* Main block */
 .main {
     background-color: var(--dark-color);
     width: 100%;
@@ -45,28 +49,47 @@ h1 {
     justify-content: space-evenly;
 }
 
+/* Main => Search block */
+
 .form{
     padding: 2rem 0;
     width: 60%;
     text-align: center;
-    border-radius: 8px;
-
 }
 
 .input {
     padding: 0.5rem 1rem;
     width: 70%;
-    border-radius: 8px;
-    border: none;
+    background: transparent;
+    color: var(--light-color);
+    border: 2px solid var(--light-color);
+    border-radius: var(--border-radius);
+    outline: none;
+}
+
+input:focus {
+    box-shadow: var(--shadow);
+}
+
+.btn {
+    cursor: pointer;
+    border-radius: var(--border-radius);
+    background: transparent;
+    border: 2px solid var(--light-color);
+    color: var(--light-color);
+    transition: all 0.3s;
+}
+
+.btn:hover {
+    background: var(--violet-color);
 }
 
 .search {
     height: 100%;
-    cursor: pointer;
-    border-radius: 8px;
     padding: 0 1rem;
-    border: none;
 }
+
+/* Main => Characters block */
 
 #loader {
     color: var(--light-color);
@@ -79,20 +102,24 @@ h1 {
     display: block;
 }
 
-
 #list {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: auto;
+    width: 90%;
     padding: 0 2rem;
+    gap: 1.5rem;
 }
 
-#list article {
-    width: 24%;
-    overflow: hidden;
+.card {
+    width: 100%;
     position: relative;
-    border-radius: 8px;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.card:hover {
+    box-shadow: var(--shadow);
 }
 
 .character-name {
@@ -110,11 +137,22 @@ h1 {
 }
 
 .character-name:hover {
-    text-shadow: 1px 1px 0px #6363ca;;
+    text-shadow: 1px 1px 0px var(--violet-color);
     font-weight: 800;
 }
 
 #list article img {
     width: 100%;
+    object-fit: cover;
+}
+
+/* Main => Bottom buttons block */
+.button-block {
+    margin: 1.5rem 0 3rem;
+}
+
+#btn-all {
+    width: max-content;
+    padding: 0.5rem 2rem;
 }
 
