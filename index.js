@@ -20,7 +20,8 @@ let isFirstLoad = true;
 //додаємо обробник події на клік по кнопці See more
 btnMore.addEventListener('click', displayAllCharacters);
 
-// відображення рандомних 4 персонажей при завантаженні застосунку
+
+// функція для відображення рандомних персонажів при завантаженні застосунку
 async function displayCharacters() {
     try {
         showLoader();
@@ -38,6 +39,7 @@ async function displayCharacters() {
     }
 }
 
+//функція для відображення всіх персонажів з пагінацією
 async function displayAllCharacters() {
     try {
         showLoader();
