@@ -146,12 +146,9 @@ input:focus {
     object-fit: cover;
 }
 
-/* Main => Bottom buttons block */
-.button-block {
+/* Main => Button */
+#btn-more {
     margin: 1.5rem 0 3rem;
-}
-
-#btn-all {
     width: max-content;
     padding: 0.5rem 2rem;
 }

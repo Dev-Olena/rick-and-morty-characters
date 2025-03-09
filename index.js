@@ -7,46 +7,67 @@ const BASE_URL = 'https://rickandmortyapi.com/api/character';
 //отримуємо доступ до елементів
 const charactersList = document.querySelector('#list');
 const loader = document.querySelector('#loader');
-const btnAll = document.querySelector('#btn-all');
-const btnBlock = document.querySelector('.button-block');
-
+const btnMore = document.querySelector('#btn-more');
 
 
 //створюємо екземпляр APIHandler з базовою url
 const api = new APIHandler(BASE_URL);
 const quantityForHomePage = 4;
 
+//змінна для відстеження першого натискання по кнопці See more
+let isFirstLoad = true;
 
-//додаємо обробник події на клік по кнопці See all
-btnAll.addEventListener('click', displayAllCharacters);
-
+//додаємо обробник події на клік по кнопці See more
+btnMore.addEventListener('click', displayAllCharacters);
 
 // відображення рандомних 4 персонажей при завантаженні застосунку
 async function displayCharacters() {
-    showLoader();
-    const charactersArray = await api.getRandomCharacters(quantityForHomePage);
-    const cards = charactersArray.map(characterData => {
-        const character = new Character(characterData);
-        return character.render();
-    });
-    removeLoader();
-    charactersList.append(...cards);
+    try {
+        showLoader();
+        const charactersArray = await api.getRandomCharacters(quantityForHomePage);
+        const cards = charactersArray.map(characterData => {
+            const character = new Character(characterData);
+            return character.render();
+        });
+        //відображаємо картки в charactersList
+        charactersList.append(...cards);
+    } catch (error) {
+        console.log(error)
+    } finally {
+        removeLoader();
+    }
 }
 
 async function displayAllCharacters() {
-    charactersList.innerHTML= '';
-    showLoader();
-    const charactersArray = await api.getAllCharacters();
-    const cards = charactersArray.map(characterData => {
-        const character = new Character(characterData);
-        return character.render();
-    });
-    removeLoader();
-    charactersList.append(...cards);
-    btnBlock.innerHTML = ""
+    try {
+        showLoader();
+        //очищаємо список лише першому натисканні кнопки See more
+        if(isFirstLoad) {
+            charactersList.innerHTML= '';
+            isFirstLoad = false;
+        }
+
+        const charactersArray = await api.getAllCharacters();
+
+        //перевіряємо чи масив даних не є порожнім
+        if(charactersArray.length) {
+            const cards = charactersArray.map(characterData => {
+                const character = new Character(characterData);
+                return character.render();
+            });
+            //відображаємо картки в charactersList
+            charactersList.append(...cards);
+        }
+    } catch (error) {
+        console.log(error)
+    } finally {
+        removeLoader();
+        //ховаємо кнопку See more коли завантажилась остання сторінка з персонажами
+        if(api.nextPageUrl === null) {
+            btnAll.hidden = true;
+        }
+    }
 }
-
-
 
 //функція для відображення лоадера
 const showLoader = () => {
@@ -57,9 +78,6 @@ const showLoader = () => {
 const removeLoader = () => {
     loader.classList.remove('visible');
 }
-
-
-
 
 
 displayCharacters()

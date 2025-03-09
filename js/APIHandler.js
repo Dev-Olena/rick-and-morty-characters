@@ -1,6 +1,7 @@
 class APIHandler {
     constructor(url) {
         this.url = url;
+        this.nextPageUrl = url;
     }
 
     //приватний метод класу для отримання загальної кількості персонажей з API та обирання рандомних id у кількості визначених змінною  amount
@@ -44,14 +45,23 @@ class APIHandler {
     }
 
     async getAllCharacters() {
+        // перевіряємо чи існує сторінка
+        if(this.nextPageUrl === null) {
+            return [];
+        }
         try {
-            const response =  await fetch(this.url);
+            const response =  await fetch(this.nextPageUrl);
             if(!response.ok) {
                 const error = await response.json();
                 throw new Error(error.message)
             }
             const data = await response.json();
             console.log(data.results);
+
+            //змінюємо URL для наступного запиту
+            this.nextPageUrl = data.info.next;
+
+            //повертаємо масив з даними персонажів
             return data.results;
         } catch (error) {
             console.log(error)
