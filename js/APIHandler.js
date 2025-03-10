@@ -64,8 +64,27 @@ class APIHandler {
             //повертаємо масив з даними персонажів
             return data.results;
         } catch (error) {
-            console.log(error)
+            console.log(error);
+            return [];
         }   
+    }
+
+    async getCharactersByName(name) {
+        try {
+            const url = `${this.nextPageUrl}/?name=${name}`;
+            const response = await fetch(url);   
+            if(!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message)
+            }
+            const data = await response.json();
+            console.log(data);
+            console.log(data.results);
+            return data.results
+        } catch (error) {
+            console.log(error);
+            return [];
+        }
     }
 }
 

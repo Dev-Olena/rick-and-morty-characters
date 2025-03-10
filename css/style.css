@@ -84,10 +84,10 @@ input:focus {
     background: var(--violet-color);
 }
 
-.search {
+/* .search {
     height: 100%;
     padding: 0 1rem;
-}
+} */
 
 /* Main => Characters block */
 
@@ -207,3 +207,10 @@ input:focus {
     cursor: pointer;
 } 
 
+/* Message */
+.message {
+    grid-column: 1/-1;
+    color: var(--light-color);
+    font-size: 1.5rem;
+    justify-self: center;
+}

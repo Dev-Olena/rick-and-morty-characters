@@ -8,7 +8,7 @@ const BASE_URL = 'https://rickandmortyapi.com/api/character';
 const charactersList = document.querySelector('#list');
 const loader = document.querySelector('#loader');
 const btnMore = document.querySelector('#btn-more');
-
+const search = document.querySelector('.input');
 
 //створюємо екземпляр APIHandler з базовою url
 const api = new APIHandler(BASE_URL);
@@ -19,6 +19,14 @@ let isFirstLoad = true;
 
 //додаємо обробник події на клік по кнопці See more
 btnMore.addEventListener('click', displayAllCharacters);
+
+//додаємо обробник події на поле пошуку
+search.addEventListener('input', displaySearchResult);
+search.addEventListener('search', () => {
+    charactersList.innerHTML='';
+    btnMore.hidden = false;
+    displayCharacters();
+});
 
 
 // функція для відображення рандомних персонажів при завантаженні застосунку
@@ -66,7 +74,7 @@ async function displayAllCharacters() {
         removeLoader();
         //ховаємо кнопку See more коли завантажилась остання сторінка з персонажами
         if(api.nextPageUrl === null) {
-            btnAll.hidden = true;
+            btnMore.hidden = true;
         }
     }
 }
@@ -79,6 +87,49 @@ const showLoader = () => {
 //функція для видалення лоадера
 const removeLoader = () => {
     loader.classList.remove('visible');
+}
+
+//функція для відображення результатів пошуку
+async function displaySearchResult () {
+    try {
+        const request = search.value;
+        if(request.trim()) {
+            //очищаємо попередній список персонажів
+            charactersList.innerHTML= '';
+            showLoader();
+            const name = request.toLowerCase().trim();
+            console.log(request)
+            //передаємо значення введене в поле пошуку в метод пошуку персонажів за ім'ям
+            const charactersArray= await api.getCharactersByName(name);
+           //перевіряємо чи масив даних не є порожнім
+            if(charactersArray.length) {
+                const cards = charactersArray.map(characterData => {
+                    const character = new Character(characterData);
+                    return character.render();
+                });
+                //відображаємо картки в charactersList
+                charactersList.append(...cards);
+            } else {
+                displayMessage('No results. Please, try again.')
+            }
+    }
+    } catch (error) {
+        console.log(error)
+    }finally {
+        removeLoader();
+    }
+    
+}
+
+
+//функція для виведення повідомлення користувачу
+const displayMessage = (message) => {
+    const mesParagraph = document.createElement('p');
+    mesParagraph.textContent = message;
+    mesParagraph.classList.add('message');
+    charactersList.replaceChildren(mesParagraph);
+    btnMore.hidden = true;
+    
 }
 
 
