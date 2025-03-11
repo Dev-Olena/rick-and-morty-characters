@@ -40,12 +40,8 @@ async function displayCharacters() {
             displaySavedCharacters();
         } else {
             const charactersArray = await api.getRandomCharacters(quantityForHomePage);
-            const cards = charactersArray.map(characterData => {
-            const character = new Character(characterData);
-            return character.render();
-        });
-        //відображаємо картки в charactersList
-        charactersList.append(...cards);
+
+            renderCharacterCards(charactersArray);
         }
     } catch (error) {
         console.log(error)
@@ -66,19 +62,11 @@ async function displayAllCharacters() {
 
         const charactersArray = await api.getAllCharacters();
 
-        //перевіряємо чи масив даних не є порожнім
-        if(charactersArray.length) {
-            const cards = charactersArray.map(characterData => {
-                const character = new Character(characterData);
-                return character.render();
-            });
+        renderCharacterCards(charactersArray);
 
-            //відображаємо картки в charactersList
-            charactersList.append(...cards);
-
-            //зберігаємо результати в localStorage
-            saveCharacters(charactersArray);
-        }
+        //зберігаємо результати в localStorage
+        saveCharacters(charactersArray);
+        
     } catch (error) {
         console.log(error)
     } finally {
@@ -110,29 +98,21 @@ async function displaySearchResult () {
             charactersList.innerHTML= '';
 
             showLoader();
+
             const name = request.toLowerCase().trim();
             console.log(request)
 
             //передаємо значення введене в поле пошуку в метод пошуку персонажів за ім'ям
             const charactersArray= await api.getCharactersByName(name);
 
-            //перевіряємо чи масив даних не є порожнім
-            if(charactersArray.length) {
-                
-                const cards = charactersArray.map(characterData => {
-                    const character = new Character(characterData);
-                    return character.render();
-                });
+            //передаємо масив даних отриманих з API до функції для створення та відображення карток
+            renderCharacterCards(charactersArray);
 
-                //відображаємо картки в charactersList
-                charactersList.append(...cards);
-
-                //зберігаємо список в localStorage
-                saveCharacters(charactersArray);
-            } else {
-                displayMessage('No results. Please, try again.')
-            }
-    }
+            //зберігаємо список в localStorage
+            saveCharacters(charactersArray);
+        } else {
+            displayMessage('No results. Please, try again.')
+        }
     } catch (error) {
         console.log(error)
     }finally {
@@ -150,9 +130,6 @@ const displayMessage = (message) => {
 }
 
 //функція для збереження списку персонажів
-// const saveCharacters = () => {
-//     localStorage.setItem('charactersList', cards);
-// }
 const saveCharacters = (list) => {
     //масив перетворюємо на JSON перед збереженням
     localStorage.setItem('charactersList', JSON.stringify(list));
@@ -161,14 +138,24 @@ const saveCharacters = (list) => {
 //функція для відображення збереженного списку персонажів
 const displaySavedCharacters = () => {
     const savedList = JSON.parse(localStorage.getItem('charactersList'));
-    const cards = savedList.map(characterData => {
-        const character = new Character(characterData);
-        return character.render();
-    });
-    //відображаємо картки в charactersList
-    charactersList.append(...cards);
-    console.log(savedList)
 
+    renderCharacterCards(savedList);
+    console.log(savedList);
+}
+
+//функція для створення та відображення карток персонажів 
+const renderCharacterCards = (dataArray) => {
+    //перевіряємо чи масив даних не є порожнім
+    if(dataArray.length) {
+                
+        const cards = dataArray.map(data => {
+            const character = new Character(data);
+            return character.render();
+        });
+
+        //відображаємо картки в charactersList
+        charactersList.append(...cards);
+    }
 }
 
 displayCharacters()
