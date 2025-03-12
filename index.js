@@ -3,7 +3,7 @@ import Character from "./js/Character.js";
 import * as utils from "./js/utils.js";
 
 
-const BASE_URL = 'https://rickandmortyapi.com/api/character';
+const BASE_URL = 'https://rickandmortyapi.com/api/character/';
 
 //отримуємо доступ до елементів
 const charactersList = document.querySelector('#list');
@@ -87,28 +87,29 @@ async function displaySearchResult () {
     try {
         const request = search.value.trim();
         //перевірка на порожній рядок
-        if(request) {
-            //очищаємо попередній список персонажів
-            charactersList.innerHTML= '';
+        if(!request) return;
 
-            utils.showElement(loader);
 
-            const name = request.toLowerCase();
-            console.log(request)
+        //очищаємо попередній список персонажів
+        charactersList.innerHTML= '';
 
-            //передаємо значення введене в поле пошуку в метод пошуку персонажів за ім'ям
-            const charactersArray= await api.getCharactersByName(name);
+        utils.showElement(loader);
+
+        const name = request.toLowerCase();
+        console.log(request)
+
+        //передаємо значення введене в поле пошуку в методпошуку персонажів за ім'ям
+        const charactersArray= await api.getCharactersByName(name);
+        
+        if(charactersArray.length) {
+            //передаємо масив даних отриманих з API дофункції для створення та відображення карток
+            renderCharacterCards(charactersArray);
            
-            if(charactersArray.length) {
-                //передаємо масив даних отриманих з API до функції для створення та відображення карток
-                renderCharacterCards(charactersArray);
-
-                //зберігаємо список персонажів в sessionStorage
-                utils.saveListToSessionStorage(charactersArray, 'charactersList');
-            } else {
-                utils.displayMessage('No results. Please, try again.', 'p', 'message', charactersList);
-                btnMore.hidden = true;
-            }
+            //зберігаємо список персонажів в sessionStorage
+            utils.saveListToSessionStorage(charactersArray,'charactersList');
+        } else {
+            utils.displayMessage('No results. Please, tryagain.', 'p', 'message', charactersList);
+            btnMore.hidden = true;
         }
     } catch (error) {
         console.log(error)

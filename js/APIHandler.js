@@ -2,6 +2,7 @@ class APIHandler {
     constructor(url) {
         this.url = url;
         this.nextPageUrl = url;
+        this.nextSearchPageUrl = url;
     }
 
     //приватний метод класу для отримання загальної кількості персонажей з API та обирання рандомних id у кількості визначених змінною  amount
@@ -70,8 +71,16 @@ class APIHandler {
     }
 
     async getCharactersByName(name) {
+        //прапорець для визначення адреси запиту
+        let isNext = false;
         try {
-            const url = `${this.nextPageUrl}/?name=${name}`;
+
+            //перевіряємо чи існує сторінка
+            if(this.nextSearchPageUrl === null) {
+                return [];
+            }
+            const url = isNext ? this.nextSearchPageUrl : `${this.url}?name=${name}`;
+            
             const response = await fetch(url);   
             if(!response.ok) {
                 const error = await response.json();
@@ -79,6 +88,19 @@ class APIHandler {
             }
             const data = await response.json();
             console.log(data);
+
+            //змінюємо URL для наступної сторінки
+            if(data.info.next) {
+                isNext = true;
+                //дістаємо з відповіді адресу наступної сторінки
+                const nextPage = new URL(data.info.next);
+                //виправляємо параметр name на введене користувачем
+                nextPage.searchParams.set('name', name);
+                this.nextSearchPageUrl= nextPage.toString();
+            } else {
+                this.nextSearchPageUrl = null;
+            }
+            
             console.log(data.results);
             return data.results
         } catch (error) {
