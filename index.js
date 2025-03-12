@@ -1,5 +1,6 @@
 import APIHandler from "./js/APIHandler.js";
 import Character from "./js/Character.js";
+import * as utils from "./js/utils.js";
 
 
 const BASE_URL = 'https://rickandmortyapi.com/api/character';
@@ -32,12 +33,15 @@ search.addEventListener('input', displaySearchResult);
 // функція для відображення збережених або рандомних персонажів
 async function displayCharacters() {
     try {
-        showLoader();
+        utils.showElement(loader);
 
-        //перевіряємо наявність збережених карток в localStorage
-        const savedResults = localStorage.getItem('charactersList');
+        //перевіряємо наявність збережених карток в sessionStorage
+        const savedResults = sessionStorage.getItem('charactersList');
+      
+        
+
         if(savedResults) {
-            displaySavedCharacters();
+            utils.displaySavedList('charactersList', renderCharacterCards);
         } else {
             const charactersArray = await api.getRandomCharacters(quantityForHomePage);
 
@@ -46,14 +50,14 @@ async function displayCharacters() {
     } catch (error) {
         console.log(error)
     } finally {
-        removeLoader();
+        utils.removeElement(loader);
     }
 }
 
 //функція для відображення всіх персонажів з пагінацією
 async function displayAllCharacters() {
     try {
-        showLoader();
+        utils.showElement(loader);
         //очищаємо список лише при першому натисканні кнопки See more
         if(isFirstLoad) {
             charactersList.innerHTML= '';
@@ -62,15 +66,15 @@ async function displayAllCharacters() {
 
         const charactersArray = await api.getAllCharacters();
 
-        renderCharacterCards(charactersArray);
-
-        //зберігаємо результати в localStorage
-        saveCharacters(charactersArray);
-        
+        if(charactersArray.length){
+            renderCharacterCards(charactersArray);
+            //зберігаємо результати в sessionStorage
+            utils.saveListToSessionStorage(charactersArray, 'charactersList');  
+        } 
     } catch (error) {
         console.log(error)
     } finally {
-        removeLoader();
+        utils.removeElement(loader);
         //ховаємо кнопку See more коли завантажилась остання сторінка з персонажами
         if(api.nextPageUrl === null) {
             btnMore.hidden = true;
@@ -78,84 +82,49 @@ async function displayAllCharacters() {
     }
 }
 
-//функція для відображення лоадера
-const showLoader = () => {
-    loader.classList.add('visible');
-}
-
-//функція для видалення лоадера
-const removeLoader = () => {
-    loader.classList.remove('visible');
-}
-
 //функція для відображення результатів пошуку
 async function displaySearchResult () {
     try {
-        const request = search.value;
+        const request = search.value.trim();
         //перевірка на порожній рядок
-        if(request.trim()) {
+        if(request) {
             //очищаємо попередній список персонажів
             charactersList.innerHTML= '';
 
-            showLoader();
+            utils.showElement(loader);
 
-            const name = request.toLowerCase().trim();
+            const name = request.toLowerCase();
             console.log(request)
 
             //передаємо значення введене в поле пошуку в метод пошуку персонажів за ім'ям
             const charactersArray= await api.getCharactersByName(name);
+           
+            if(charactersArray.length) {
+                //передаємо масив даних отриманих з API до функції для створення та відображення карток
+                renderCharacterCards(charactersArray);
 
-            //передаємо масив даних отриманих з API до функції для створення та відображення карток
-            renderCharacterCards(charactersArray);
-
-            //зберігаємо список в localStorage
-            saveCharacters(charactersArray);
-        } else {
-            displayMessage('No results. Please, try again.')
+                //зберігаємо список персонажів в sessionStorage
+                utils.saveListToSessionStorage(charactersArray, 'charactersList');
+            } else {
+                utils.displayMessage('No results. Please, try again.', 'p', 'message', charactersList);
+                btnMore.hidden = true;
+            }
         }
     } catch (error) {
         console.log(error)
     }finally {
-        removeLoader();
+        utils.removeElement(loader);
     }
-}
-
-//функція для виведення повідомлення користувачу
-const displayMessage = (message) => {
-    const mesParagraph = document.createElement('p');
-    mesParagraph.textContent = message;
-    mesParagraph.classList.add('message');
-    charactersList.replaceChildren(mesParagraph);
-    btnMore.hidden = true;
-}
-
-//функція для збереження списку персонажів
-const saveCharacters = (list) => {
-    //масив перетворюємо на JSON перед збереженням
-    localStorage.setItem('charactersList', JSON.stringify(list));
-}
-
-//функція для відображення збереженного списку персонажів
-const displaySavedCharacters = () => {
-    const savedList = JSON.parse(localStorage.getItem('charactersList'));
-
-    renderCharacterCards(savedList);
-    console.log(savedList);
 }
 
 //функція для створення та відображення карток персонажів 
-const renderCharacterCards = (dataArray) => {
-    //перевіряємо чи масив даних не є порожнім
-    if(dataArray.length) {
-                
-        const cards = dataArray.map(data => {
-            const character = new Character(data);
-            return character.render();
-        });
-
-        //відображаємо картки в charactersList
-        charactersList.append(...cards);
-    }
+const renderCharacterCards = (dataArray) => {      
+    const cards = dataArray.map(data => {
+        const character = new Character(data);
+        return character.render();
+    });
+    //відображаємо картки в charactersList
+    charactersList.append(...cards);
 }
 
 displayCharacters()
