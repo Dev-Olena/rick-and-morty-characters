@@ -15,11 +15,23 @@ const search = document.querySelector('.input');
 const api = new APIHandler(BASE_URL);
 const quantityForHomePage = 4;
 
+
 //змінна для відстеження першого натискання по кнопці See more
 let isFirstLoad = true;
+//змінна для відстеження активності пошуку
+let isSearching = false;
 
-//додаємо обробник події на клік по кнопці See more
-btnMore.addEventListener('click', displayAllCharacters);
+
+//додаємо обробник події на клік по кнопці See more залежно від результату запиту
+const setSeeMoreHandler = () => {
+    btnMore.removeEventListener('click', displayAllCharacters);
+    btnMore.removeEventListener('click', displaySearchResult);
+    if(isSearching) {
+        btnMore.addEventListener('click', displaySearchResult);
+    }else {
+        btnMore.addEventListener('click', displayAllCharacters)
+    }
+}
 
 //додаємо обробник події на поле пошуку
 search.addEventListener('input', displaySearchResult);
@@ -38,8 +50,6 @@ async function displayCharacters() {
         //перевіряємо наявність збережених карток в sessionStorage
         const savedResults = sessionStorage.getItem('charactersList');
       
-        
-
         if(savedResults) {
             utils.displaySavedList('charactersList', renderCharacterCards);
         } else {
@@ -47,12 +57,15 @@ async function displayCharacters() {
 
             renderCharacterCards(charactersArray);
         }
+         //оновлюємо обробник подій для кнопки See more
+         setSeeMoreHandler();
     } catch (error) {
         console.log(error)
     } finally {
         utils.removeElement(loader);
     }
 }
+
 
 //функція для відображення всіх персонажів з пагінацією
 async function displayAllCharacters() {
@@ -71,6 +84,8 @@ async function displayAllCharacters() {
             //зберігаємо результати в sessionStorage
             utils.saveListToSessionStorage(charactersArray, 'charactersList');  
         } 
+         //оновлюємо обробник подій для кнопки See more
+         setSeeMoreHandler();
     } catch (error) {
         console.log(error)
     } finally {
@@ -82,6 +97,7 @@ async function displayAllCharacters() {
     }
 }
 
+
 //функція для відображення результатів пошуку
 async function displaySearchResult () {
     try {
@@ -89,28 +105,39 @@ async function displaySearchResult () {
         //перевірка на порожній рядок
         if(!request) return;
 
-
-        //очищаємо попередній список персонажів
-        charactersList.innerHTML= '';
-
-        utils.showElement(loader);
-
         const name = request.toLowerCase();
         console.log(request)
+        //очищаємо попередній список персонажів у разі нового запиту, позначаємо стан пошуку 
+        if(api.currentRequest !== name) {
+            charactersList.innerHTML= '';
+            isSearching = true;
+        }
+        
+        utils.showElement(loader);
 
-        //передаємо значення введене в поле пошуку в методпошуку персонажів за ім'ям
+        //передаємо значення введене в поле пошуку в метод пошуку персонажів за ім'ям
         const charactersArray= await api.getCharactersByName(name);
         
         if(charactersArray.length) {
-            //передаємо масив даних отриманих з API дофункції для створення та відображення карток
+            //передаємо масив даних отриманих з API до функції для створення та відображення карток
             renderCharacterCards(charactersArray);
-           
+
+            //ховаємо кнопку See more якщо це єдина / остання сторінка
+            if(api.nextSearchPageUrl===null) {
+                btnMore.hidden = true;
+            } else {
+                btnMore.hidden = false;
+            }
             //зберігаємо список персонажів в sessionStorage
             utils.saveListToSessionStorage(charactersArray,'charactersList');
+           
         } else {
-            utils.displayMessage('No results. Please, tryagain.', 'p', 'message', charactersList);
+            isSearching = false;
+            utils.displayMessage('No results. Please, try again.', 'p', 'message', charactersList);
             btnMore.hidden = true;
         }
+        //оновлюємо обробник подій для кнопки See more
+        setSeeMoreHandler();
     } catch (error) {
         console.log(error)
     }finally {

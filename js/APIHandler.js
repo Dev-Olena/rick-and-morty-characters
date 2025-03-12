@@ -3,6 +3,7 @@ class APIHandler {
         this.url = url;
         this.nextPageUrl = url;
         this.nextSearchPageUrl = url;
+        this.currentRequest  = '';
     }
 
     //приватний метод класу для отримання загальної кількості персонажей з API та обирання рандомних id у кількості визначених змінною  amount
@@ -71,27 +72,28 @@ class APIHandler {
     }
 
     async getCharactersByName(name) {
-        //прапорець для визначення адреси запиту
-        let isNext = false;
         try {
-
+            // cкидаємо прапорець для визначення адреси запиту за умови нового запиту
+            if(this.currentRequest !== name) {
+                this.nextSearchPageUrl = `${this.url}?name=${name}`;
+                this.currentRequest = name;
+            }
+            
             //перевіряємо чи існує сторінка
             if(this.nextSearchPageUrl === null) {
                 return [];
             }
-            const url = isNext ? this.nextSearchPageUrl : `${this.url}?name=${name}`;
             
-            const response = await fetch(url);   
+            const response = await fetch(this.nextSearchPageUrl);   
             if(!response.ok) {
                 const error = await response.json();
                 throw new Error(error.message)
             }
             const data = await response.json();
-            console.log(data);
+            console.log('result data', data);
 
             //змінюємо URL для наступної сторінки
             if(data.info.next) {
-                isNext = true;
                 //дістаємо з відповіді адресу наступної сторінки
                 const nextPage = new URL(data.info.next);
                 //виправляємо параметр name на введене користувачем
