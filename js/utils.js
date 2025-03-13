@@ -16,7 +16,6 @@ export const displaySavedList = (name, render) => {
 
 //функція для виведення повідомлення користувачу
 export const displayMessage = (message, element, clName,elementForRender) => {
-    console.log('displayMessage is called');
     const mesParagraph = document.createElement(element);
     mesParagraph.textContent = message;
     mesParagraph.classList.add(clName);
@@ -31,4 +30,25 @@ export const showElement = (el) => {
 //функція для видалення лелементаоадера
 export const removeElement = (el) => {
     el.classList.remove('visible');
+}
+
+//функція для відображення кнопки "вгору"
+export const showBtnTop = (clName, id, elForRender) => {
+    if(!document.querySelector(`.${clName}`)) {
+        
+        const btnTop = document.createElement('a');
+        btnTop.textContent = '↑';
+        btnTop.href = id;
+        btnTop.classList.add(clName);
+        window.addEventListener('scroll' , () => {
+            if(window.scrollY > 300) {
+                btnTop.classList.add('visible');
+            } else {
+                btnTop.classList.remove('visible');
+            }
+        })
+        elForRender.append(btnTop);
+    }
+    
+
 }

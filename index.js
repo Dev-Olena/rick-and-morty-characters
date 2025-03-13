@@ -82,7 +82,11 @@ async function displayAllCharacters() {
         if(charactersArray.length){
             renderCharacterCards(charactersArray);
             //зберігаємо результати в sessionStorage
-            utils.saveListToSessionStorage(charactersArray, 'charactersList');  
+            utils.saveListToSessionStorage(charactersArray, 'charactersList');
+            //додоємо кнопку "вгору, якщо результатів >=20"
+            if(charactersArray.length >= 20) {
+                utils.showBtnTop('btnTop', '#top', charactersList);
+            }  
         } 
          //оновлюємо обробник подій для кнопки See more
          setSeeMoreHandler();
@@ -122,15 +126,13 @@ async function displaySearchResult () {
             //передаємо масив даних отриманих з API до функції для створення та відображення карток
             renderCharacterCards(charactersArray);
 
-            //ховаємо кнопку See more якщо це єдина / остання сторінка
-            if(api.nextSearchPageUrl===null) {
-                btnMore.hidden = true;
-            } else {
-                btnMore.hidden = false;
-            }
             //зберігаємо список персонажів в sessionStorage
             utils.saveListToSessionStorage(charactersArray,'charactersList');
-           
+            
+            //додоємо кнопку "вгору", якщо результатів >=20
+            if(charactersArray.length >= 20) {
+                utils.showBtnTop('btnTop', '#top', charactersList);
+            }             
         } else {
             isSearching = false;
             utils.displayMessage('No results. Please, try again.', 'p', 'message', charactersList);
@@ -142,6 +144,10 @@ async function displaySearchResult () {
         console.log(error)
     }finally {
         utils.removeElement(loader);
+        //ховаємо кнопку See more якщо це єдина / остання сторінка
+        if(api.nextSearchPageUrl===null) {
+            btnMore.hidden = true;
+        }
     }
 }
 
@@ -155,7 +161,9 @@ const renderCharacterCards = (dataArray) => {
     charactersList.append(...cards);
 }
 
-displayCharacters()
+displayCharacters();
+
+
 
 
 
