@@ -11,7 +11,6 @@ export const displaySavedList = (name, render) => {
     const savedList = JSON.parse(sessionStorage.getItem(name));
 
     render(savedList);
-    console.log(savedList);
 };
 
 //функція для виведення повідомлення користувачу

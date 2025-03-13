@@ -35,11 +35,16 @@ const setSeeMoreHandler = () => {
 
 //додаємо обробник події на поле пошуку
 search.addEventListener('input', displaySearchResult);
-// search.addEventListener('search', () => {
-//     charactersList.innerHTML='';
-//     btnMore.hidden = false;
-//     displayCharacters();
-// });
+
+//обробник події на очищення поля пошуку
+search.addEventListener('search', () => {
+    //видаляємо збережені дані з sessionStorage
+    sessionStorage.removeItem('charactersList');
+    isSearching = false;
+    charactersList.innerHTML='';
+    //повертаємо користувача до домашньої сторінки з рандомними персонажами
+    displayCharacters();
+});
 
 
 // функція для відображення збережених або рандомних персонажів
@@ -58,7 +63,7 @@ async function displayCharacters() {
             renderCharacterCards(charactersArray);
         }
          //оновлюємо обробник подій для кнопки See more
-         setSeeMoreHandler();
+        setSeeMoreHandler();
     } catch (error) {
         console.log(error)
     } finally {
