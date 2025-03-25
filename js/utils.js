@@ -1,24 +1,24 @@
 import Character from "./Character.js";
 
-//функція для збереження списку в sessionStorage
+//збереження списку персонажів під певним ключем — для відновлення після оновлення сторінки
 export const saveListToSessionStorage = (list, name) => {
-    //масив перетворюємо на JSON перед збереженням
     sessionStorage.setItem(name, JSON.stringify(list));
 }
 
-//функція для відображення збереженного списку з sessionStorage
+//відображення збереженного списку з sessionStorage
 export const displaySavedList = (name, render) => {
     const savedList = JSON.parse(sessionStorage.getItem(name));
-
-    render(savedList);
+    if(savedList) render(savedList);
 };
 
 //функція для виведення повідомлення користувачу
-export const displayMessage = (message, element, clName,elementForRender) => {
-    const mesParagraph = document.createElement(element);
-    mesParagraph.textContent = message;
-    mesParagraph.classList.add(clName);
-    elementForRender.replaceChildren(mesParagraph);
+export const displayMessage = (message, tagName, clName, elementForRender) => {
+    if(elementForRender) {
+         const mesParagraph = document.createElement(tagName);
+        mesParagraph.textContent = message;
+        mesParagraph.classList.add(clName);
+        elementForRender.replaceChildren(mesParagraph);
+    }
 };
 
 //функція для відображення елемента
@@ -27,18 +27,22 @@ export const showElement = (el) => {
 }
 
 //функція для видалення лелементаоадера
-export const removeElement = (el) => {
+export const hideElement = (el) => {
     el.classList.remove('visible');
 }
 
 //функція для відображення кнопки "вгору"
 export const showBtnTop = (clName, id, elForRender) => {
-    if(!document.querySelector(`.${clName}`)) {
+    if(elForRender) {
+        let btnTop = document.querySelector(`.${clName}`);
+        if(!btnTop) {
         
-        const btnTop = document.createElement('a');
-        btnTop.textContent = '↑';
-        btnTop.href = id;
-        btnTop.classList.add(clName);
+            btnTop = document.createElement('a');
+            btnTop.textContent = '↑';
+            btnTop.href = id;
+            btnTop.classList.add(clName);
+            elForRender.append(btnTop);
+        }
         window.addEventListener('scroll' , () => {
             if(window.scrollY > 300) {
                 btnTop.classList.add('visible');
@@ -46,8 +50,5 @@ export const showBtnTop = (clName, id, elForRender) => {
                 btnTop.classList.remove('visible');
             }
         })
-        elForRender.append(btnTop);
     }
-    
-
 }

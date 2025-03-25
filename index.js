@@ -67,7 +67,7 @@ async function displayCharacters() {
     } catch (error) {
         console.log(error)
     } finally {
-        utils.removeElement(loader);
+        utils.hideElement(loader);
     }
 }
 
@@ -98,7 +98,7 @@ async function displayAllCharacters() {
     } catch (error) {
         console.log(error)
     } finally {
-        utils.removeElement(loader);
+        utils.hideElement(loader);
         //ховаємо кнопку See more коли завантажилась остання сторінка з персонажами
         if(api.nextPageUrl === null) {
             btnMore.hidden = true;
@@ -111,7 +111,6 @@ async function displayAllCharacters() {
 async function displaySearchResult () {
     try {
         const request = search.value.trim();
-        //перевірка на порожній рядок
         if(!request) return;
 
         const name = request.toLowerCase();
@@ -148,7 +147,7 @@ async function displaySearchResult () {
     } catch (error) {
         console.log(error)
     }finally {
-        utils.removeElement(loader);
+        utils.hideElement(loader);
         //ховаємо кнопку See more якщо це єдина / остання сторінка
         if(api.nextSearchPageUrl===null) {
             btnMore.hidden = true;
@@ -162,7 +161,6 @@ const renderCharacterCards = (dataArray) => {
         const character = new Character(data);
         return character.render();
     });
-    //відображаємо картки в charactersList
     charactersList.append(...cards);
 }
 
