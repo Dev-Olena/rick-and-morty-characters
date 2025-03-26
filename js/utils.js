@@ -1,5 +1,3 @@
-import Character from "./Character.js";
-
 //збереження списку персонажів під певним ключем — для відновлення після оновлення сторінки
 export const saveListToSessionStorage = (list, name) => {
     sessionStorage.setItem(name, JSON.stringify(list));
@@ -26,12 +24,12 @@ export const showElement = (el) => {
     el.classList.add('visible');
 }
 
-//функція для видалення лелементаоадера
+//приховування елемента 
 export const hideElement = (el) => {
     el.classList.remove('visible');
 }
 
-//функція для відображення кнопки "вгору"
+//відображення кнопки "вгору" при позиції scrollY > 300
 export const showBtnTop = (clName, id, elForRender) => {
     if(elForRender) {
         let btnTop = document.querySelector(`.${clName}`);
@@ -51,4 +49,47 @@ export const showBtnTop = (clName, id, elForRender) => {
             }
         })
     }
+};
+
+//відображення модального вікна з додатковою інформацією про персонажа
+export const openDetails = (character) => {
+   const {name, status, species, image} = character;
+    //створюємо елемент Модальне вікно
+    const modal = document.createElement('div');
+    modal.classList.add('modal');
+
+    //створюємо елементи для картки персонажа та надаємо стилі
+    const imgEl = document.createElement('img');
+    imgEl.src = image;
+    imgEl.classList.add('modal-img');
+        
+    const nameEl = document.createElement('h3');
+    nameEl.textContent = name;
+    nameEl.classList.add('modal-name');
+
+    const statusEl = document.createElement('p');
+    statusEl.textContent = `Status: ${status}`;
+
+    const speciesEl = document.createElement('p');
+    speciesEl.textContent = `Species: ${species}`;
+
+    const closeBtn = document.createElement('button');
+    closeBtn.textContent = 'X';
+    closeBtn.classList.add('modal-btn');
+
+    //створюємо картку модального вікна, стилізуємо та додаємо дочірні елементи
+    const modalCard = document.createElement('article');
+    modalCard.classList.add('modal-card');
+    modalCard.append(imgEl, nameEl, statusEl, speciesEl, closeBtn);
+
+    //додаємо картку до модального вікна
+    modal.append(modalCard);
+
+    //додаємо модальне вікно на сторінку
+    document.body.append(modal);
+
+    //закриваємо модальне вікно по кліку на closeBtn
+    closeBtn.addEventListener('click', () => {
+        modal.remove()
+    })
 }
