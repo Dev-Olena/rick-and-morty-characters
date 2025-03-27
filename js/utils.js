@@ -38,14 +38,17 @@ export const showBtnTop = (clName, id, elForRender) => {
             btnTop = document.createElement('a');
             btnTop.textContent = '↑';
             btnTop.href = id;
-            btnTop.classList.add(clName);
+            btnTop.ariaLabel = 'back to top';
+            btnTop.classList.add(clName);               
             elForRender.append(btnTop);
         }
         window.addEventListener('scroll' , () => {
             if(window.scrollY > 300) {
                 btnTop.classList.add('visible');
+                btnTop.setAttribute('tabIndex', '0');
             } else {
                 btnTop.classList.remove('visible');
+                btnTop.setAttribute('tabIndex', '-1');
             }
         })
     }
@@ -65,6 +68,7 @@ export const openDetails = (character) => {
     //створюємо елементи для картки персонажа та надаємо стилі
     const imgEl = document.createElement('img');
     imgEl.src = image;
+    imgEl.alt = 'character`s image';
     imgEl.classList.add('modal-img');
         
     const nameEl = document.createElement('h3');
@@ -79,6 +83,7 @@ export const openDetails = (character) => {
 
     const closeBtn = document.createElement('button');
     closeBtn.textContent = 'X';
+    closeBtn.ariaLabel = 'close character`s details information'
     closeBtn.classList.add('modal-btn');
 
     //створюємо картку модального вікна, стилізуємо та додаємо дочірні елементи

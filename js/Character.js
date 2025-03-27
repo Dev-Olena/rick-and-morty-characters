@@ -22,10 +22,17 @@ class Character {
 
         const img = document.createElement('img');
         img.src = this.image;
+        img.alt = 'character`s image';
         
         //Додаємо стилі та елементи до картки
         characterCard.classList.add('card');
         characterCard.append(img, name);
+        characterCard.tabIndex = 0;
+        characterCard.addEventListener('keydown', (e) => {
+            if(e.key === 'Enter') {
+                openDetails(this);
+            }
+        })      
         return characterCard;
     }
 
