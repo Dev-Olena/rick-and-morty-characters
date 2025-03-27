@@ -54,6 +54,10 @@ export const showBtnTop = (clName, id, elForRender) => {
 //відображення модального вікна з додатковою інформацією про персонажа
 export const openDetails = (character) => {
    const {name, status, species, image} = character;
+
+    //перевірка для уникнення повторного відкриття модального вікна
+    if(document.querySelector('.modal')) return;
+
     //створюємо елемент Модальне вікно
     const modal = document.createElement('div');
     modal.classList.add('modal');
@@ -88,8 +92,13 @@ export const openDetails = (character) => {
     //додаємо модальне вікно на сторінку
     document.body.append(modal);
 
-    //закриваємо модальне вікно по кліку на closeBtn
+    //закриття модального вікна по кліку на closeBtn
     closeBtn.addEventListener('click', () => {
         modal.remove()
     })
+
+    //закриття модального вікна по кліку поза карткою
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.remove();
+      });
 }
