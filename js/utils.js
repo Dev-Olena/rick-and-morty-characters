@@ -106,4 +106,18 @@ export const openDetails = (character) => {
     modal.addEventListener('click', (e) => {
         if (e.target === modal) modal.remove();
       });
+};
+
+export const fetchData = async (url) => {
+    try {
+        const response = await fetch(url);
+        if(!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message)
+        }
+        return await response.json();
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
 }

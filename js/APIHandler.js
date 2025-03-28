@@ -1,3 +1,5 @@
+import {fetchData} from './utils.js';
+
 class APIHandler {
     constructor(url) {
         this.url = url;
@@ -9,22 +11,17 @@ class APIHandler {
     //приватний метод класу для отримання загальної кількості персонажей з API та обирання рандомних id у кількості визначених змінною  amount
     async #getRandomIds(amount) {
         try{
-            const response =  await fetch(this.url);
-            if(!response.ok) {
-                const error = await response.json();
-                throw new Error(error.message)
-            }
-            const data = await response.json();
+            const data = await fetchData(this.url);
             const quantity = data.info.count;
             const randomIds = [];
             for(let i = 1; i<=amount; i++) {
                 let randomId = Math.floor(Math.random() * quantity) +1 ;
                 randomIds.push(randomId);
             } 
-            console.log(randomIds)
             return randomIds;
             } catch(error) {
-            console.log(error)
+            console.log(error);
+            return [];
         }
     }
 
@@ -33,37 +30,21 @@ class APIHandler {
         try{
             const randomIds = await this.#getRandomIds(amount);
             const url = `${this.url}/${randomIds}`;
-            const response = await fetch(url);
-            if(!response.ok) {
-                const error = await response.json();
-                throw new Error(error.message)
-            }
-            const data = await response.json();
-            console.log(data)
+            const data = await fetchData(url);
             return data;
-        }catch(error) {
-            console.log(error)
+        } catch(error) {
+            console.log(error);
+            return [];
         }
     }
 
     async getAllCharacters() {
         // перевіряємо чи існує сторінка
-        if(this.nextPageUrl === null) {
-            return [];
-        }
+        if(this.nextPageUrl === null) return [];
         try {
-            const response =  await fetch(this.nextPageUrl);
-            if(!response.ok) {
-                const error = await response.json();
-                throw new Error(error.message)
-            }
-            const data = await response.json();
-            console.log(data.results);
-
-            //змінюємо URL для наступного запиту
+            const data = await fetchData(this.nextPageUrl);
+            //оновлюємо URL для наступного запиту
             this.nextPageUrl = data.info.next;
-
-            //повертаємо масив з даними персонажів
             return data.results;
         } catch (error) {
             console.log(error);
@@ -78,21 +59,14 @@ class APIHandler {
                 this.nextSearchPageUrl = `${this.url}?name=${name}`;
                 this.currentRequest = name;
             }
-            
             //перевіряємо чи існує сторінка
             if(this.nextSearchPageUrl === null) {
                 return [];
             }
-            
-            const response = await fetch(this.nextSearchPageUrl);   
-            if(!response.ok) {
-                const error = await response.json();
-                throw new Error(error.message)
-            }
-            const data = await response.json();
-            console.log('result data', data);
+            const data = await fetchData(this.nextSearchPageUrl);
+            console.log(data);
 
-            //змінюємо URL для наступної сторінки
+            //оновлюємо URL для наступної сторінки
             if(data.info.next) {
                 //дістаємо з відповіді адресу наступної сторінки
                 const nextPage = new URL(data.info.next);
