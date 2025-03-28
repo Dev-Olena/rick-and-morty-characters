@@ -14,9 +14,11 @@ class APIHandler {
             const data = await fetchData(this.url);
             const quantity = data.info.count;
             const randomIds = [];
-            for(let i = 1; i<=amount; i++) {
+            while(randomIds.length < amount) {
                 let randomId = Math.floor(Math.random() * quantity) +1 ;
-                randomIds.push(randomId);
+                if(!randomIds.includes(randomId)) {
+                    randomIds.push(randomId);
+                }
             } 
             return randomIds;
             } catch(error) {
@@ -64,7 +66,6 @@ class APIHandler {
                 return [];
             }
             const data = await fetchData(this.nextSearchPageUrl);
-            console.log(data);
 
             //оновлюємо URL для наступної сторінки
             if(data.info.next) {
@@ -77,7 +78,6 @@ class APIHandler {
                 this.nextSearchPageUrl = null;
             }
             
-            console.log(data.results);
             return data.results
         } catch (error) {
             console.log(error);
