@@ -64,6 +64,8 @@ async function displayCharacters() {
         }
          //оновлюємо обробник подій для кнопки See more
         setSeeMoreHandler();
+        //забезпечуємо присутність кнопки в інтерфейсі
+        btnMore.hidden = false;
     } catch (error) {
         console.log(error)
     } finally {
