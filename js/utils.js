@@ -12,9 +12,7 @@ export const displaySavedList = (name, render) => {
 //функція для виведення повідомлення користувачу
 export const displayMessage = (message, tagName, clName, elementForRender) => {
     if(elementForRender) {
-         const mesParagraph = document.createElement(tagName);
-        mesParagraph.textContent = message;
-        mesParagraph.classList.add(clName);
+        const mesParagraph = createElement(tagName, [clName], {}, message);
         elementForRender.replaceChildren(mesParagraph);
     }
 };
@@ -33,18 +31,13 @@ export const hideElement = (el) => {
 export const showBtnTop = (clName, id, elForRender) => {
     if(elForRender) {
         let btnTop = document.querySelector(`.${clName}`);
-        if(!btnTop) {
-        
-            btnTop = document.createElement('a');
-            btnTop.textContent = '↑';
-            btnTop.href = id;
-            btnTop.ariaLabel = 'back to top';
-            btnTop.classList.add(clName);               
+        if(!btnTop) {   
+            btnTop = createElement('a', [clName], {href: id, 'aria-label': 'back to top'}, '↑');  
             elForRender.append(btnTop);
         }
         window.addEventListener('scroll' , () => {
             if(window.scrollY > 300) {
-                btnTop.classList.add('visible');
+                btnTop.classList.add('visible')
                 btnTop.setAttribute('tabIndex', '0');
             } else {
                 btnTop.classList.remove('visible');
@@ -61,38 +54,18 @@ export const openDetails = (character) => {
     //перевірка для уникнення повторного відкриття модального вікна
     if(document.querySelector('.modal')) return;
 
-    //створюємо елемент Модальне вікно
-    const modal = document.createElement('div');
-    modal.classList.add('modal');
-
     //створюємо елементи для картки персонажа та надаємо стилі
-    const imgEl = document.createElement('img');
-    imgEl.src = image;
-    imgEl.alt = 'character`s image';
-    imgEl.classList.add('modal-img');
-        
-    const nameEl = document.createElement('h3');
-    nameEl.textContent = name;
-    nameEl.classList.add('modal-name');
-
-    const statusEl = document.createElement('p');
-    statusEl.textContent = `Status: ${status}`;
-
-    const speciesEl = document.createElement('p');
-    speciesEl.textContent = `Species: ${species}`;
-
-    const closeBtn = document.createElement('button');
-    closeBtn.textContent = 'X';
-    closeBtn.ariaLabel = 'close character`s details information'
-    closeBtn.classList.add('modal-btn');
+    const imgEl = createElement('img', ['modal-img'], {src: image, alt: 'character`s image'});
+    const nameEl = createElement('h3', ['modal-name'], {}, name);
+    const statusEl = createElement('p', [], {}, `Status: ${status}`);
+    const speciesEl = createElement('p', [], {}, `Species: ${species}`);
+    const closeBtn = createElement('button', ['modal-btn'], {'arai-label': 'close character`s details information'}, 'X');
 
     //створюємо картку модального вікна, стилізуємо та додаємо дочірні елементи
-    const modalCard = document.createElement('article');
-    modalCard.classList.add('modal-card');
-    modalCard.append(imgEl, nameEl, statusEl, speciesEl, closeBtn);
+    const modalCard = createElement('article', ['modal-card'], {}, imgEl, nameEl, statusEl, speciesEl, closeBtn);
 
-    //додаємо картку до модального вікна
-    modal.append(modalCard);
+    //створюємо елемент Модальне вікно та додаємо до нього картку
+    const modal = createElement('div', ['modal'], {}, modalCard);
 
     //додаємо модальне вікно на сторінку
     document.body.append(modal);
@@ -122,8 +95,8 @@ export const fetchData = async (url) => {
     }
 }
 
-  //функція для побудови url наступної сторінки з врахуванням параметру пошуку 
-  export const buildNextSearchUrl = (paramName, param, url) => {
+//функція для побудови url наступної сторінки з врахуванням параметру пошуку 
+export const buildNextSearchUrl = (paramName, param, url) => {
     try {
        //створюємо об'єкт URL для отриамння доступу до його параметрів та їх зміни
         const nextPage = new URL(url);
@@ -134,4 +107,17 @@ export const fetchData = async (url) => {
         console.log(error);
         throw error;
     }
+}
+
+//створення елемента
+const createElement = (type, classNames = [], attributes = {}, ...children) => {
+    const el = document.createElement(type);
+    if(classNames) {
+      el.classList.add(...classNames);  
+    }
+    Object.entries(attributes).forEach(([key, value]) => {
+        el.setAttribute(key, value);
+    })
+    el.append(...children);
+    return el;
 }
