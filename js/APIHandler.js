@@ -1,4 +1,4 @@
-import {fetchData} from './utils.js';
+import {fetchData, buildNextSearchUrl} from './utils.js';
 
 class APIHandler {
     constructor(url) {
@@ -27,7 +27,7 @@ class APIHandler {
         }
     }
 
-    // функція для отримання рандомних персонажей
+    // метод для отримання рандомних персонажів
     async getRandomCharacters(amount) {
         try{
             const randomIds = await this.#getRandomIds(amount);
@@ -45,8 +45,10 @@ class APIHandler {
         if(this.nextPageUrl === null) return [];
         try {
             const data = await fetchData(this.nextPageUrl);
+
             //оновлюємо URL для наступного запиту
-            this.nextPageUrl = data.info.next;
+            this.#updateNextPageUrl(data.info.next);
+
             return data.results;
         } catch (error) {
             console.log(error);
@@ -62,26 +64,33 @@ class APIHandler {
                 this.currentRequest = name;
             }
             //перевіряємо чи існує сторінка
-            if(this.nextSearchPageUrl === null) {
-                return [];
-            }
+            if(this.nextSearchPageUrl === null) return [];
             const data = await fetchData(this.nextSearchPageUrl);
 
             //оновлюємо URL для наступної сторінки
-            if(data.info.next) {
-                //дістаємо з відповіді адресу наступної сторінки
-                const nextPage = new URL(data.info.next);
-                //виправляємо параметр name на введене користувачем
-                nextPage.searchParams.set('name', name);
-                this.nextSearchPageUrl= nextPage.toString();
-            } else {
-                this.nextSearchPageUrl = null;
-            }
-            
-            return data.results
+            this.#updateNextPageUrl(data.info.next, true, 'name', name);
+
+            return data.results;
         } catch (error) {
             console.log(error);
             return [];
+        }
+    }
+
+    //метод для оновлення наступної сторінки 
+    #updateNextPageUrl (nextUrl, isSearch = false, paramName = '', param = '') {
+        if(!nextUrl) {
+            if(isSearch) {
+                this.nextSearchPageUrl = null;
+            } else {
+                this.nextPageUrl = null;
+            }
+            return;
+        };
+        if(isSearch) {
+            this.nextSearchPageUrl = buildNextSearchUrl('name', param, nextUrl);
+        } else {
+            this.nextPageUrl = nextUrl;
         }
     }
 }

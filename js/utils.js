@@ -121,3 +121,17 @@ export const fetchData = async (url) => {
         throw error;
     }
 }
+
+  //функція для побудови url наступної сторінки з врахуванням параметру пошуку 
+  export const buildNextSearchUrl = (paramName, param, url) => {
+    try {
+       //створюємо об'єкт URL для отриамння доступу до його параметрів та їх зміни
+        const nextPage = new URL(url);
+        //міняємо попереднє значення параметру на введене користувачем
+        nextPage.searchParams.set(paramName, param);
+        return nextPage.toString(); 
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
