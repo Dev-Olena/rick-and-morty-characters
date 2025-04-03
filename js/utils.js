@@ -70,15 +70,25 @@ export const openDetails = (character) => {
     //додаємо модальне вікно на сторінку
     document.body.append(modal);
 
+    //функція для видалення модального вікна з DOM
+    const closeModal = () => {
+        modal.remove();
+        document.removeEventListener('keydown', escapeHandler);
+    }
+
     //закриття модального вікна по кліку на closeBtn
-    closeBtn.addEventListener('click', () => {
-        modal.remove()
-    })
+    closeBtn.addEventListener('click', closeModal);
 
     //закриття модального вікна по кліку поза карткою
     modal.addEventListener('click', (e) => {
-        if (e.target === modal) modal.remove();
-      });
+        if (e.target === modal) closeModal();
+    });
+
+    //створюємо обробник Escape та додаємо на document
+    const escapeHandler = (e) => {
+        if(e.key === "Escape") closeModal();
+    }
+    document.addEventListener("keydown", escapeHandler);
 };
 
 export const fetchData = async (url) => {
@@ -121,3 +131,4 @@ const createElement = (type, classNames = [], attributes = {}, ...children) => {
     el.append(...children);
     return el;
 }
+
